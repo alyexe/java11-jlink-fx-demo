@@ -18,24 +18,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>11</version>
+            <version>11.0.1</version>
         </dependency>
     </dependencies>
 
 
     <build>
-        <resources>
-            <!--In order to use jlink in a OS independent way with a config file
-                A filtered resource  is used. This puts in the proper path separator-->
-            <resource>
-                <directory>${project.basedir}/src/jlink</directory>
-                <includes>
-                    <include>jlink.cfg</include>
-                </includes>
-                <filtering>true</filtering>
-                <targetPath>${project.build.directory}</targetPath>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -43,24 +31,41 @@
                 <version>3.8.0</version>
                 <configuration>
                     <release>11</release>
+                    <compilerArgs>
+                        <compilerArg>--module-path</compilerArg>
+                        <compilerArg>${project.build.directory}/mods</compilerArg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <groupId>org.moditect</groupId>
+                <artifactId>moditect-maven-plugin</artifactId>
+                <version>1.0.0.Beta1</version>
                 <executions>
                     <execution>
-                        <id>jlink</id>
-                        <phase>install</phase>
+                        <id>create-runtime-image</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>create-runtime-image</goal>
                         </goals>
                         <configuration>
-                            <executable>jlink</executable>
-                            <arguments>
-                                <argument>@${project.build.directory}/jlink.cfg</argument>
-                            </arguments>
+                            <modulePath>
+                                <path>${project.build.directory}/classes</path>
+                                <path>${project.build.directory}/mods</path>
+                            </modulePath>
+
+                            <modules>
+                                <module>com.altran.igjava.demo.fx.application</module>
+                            </modules>
+                            <launcher>
+                                <name>demo</name>
+                                <module>com.altran.igjava.demo.fx.application/com.altran.igjava.openjfx.demo.DemoFXApplication</module>
+                            </launcher>
+                            <outputDirectory>
+                                ${project.build.directory}/jlink-image
+                            </outputDirectory>
+                            <compression>2</compression>
+                            <stripDebug>true</stripDebug>
                         </configuration>
                     </execution>
                 </executions>
@@ -72,7 +77,7 @@
                 <executions>
                     <execution>
                         <id>unpack dependent libraries</id>
-                        <phase>package</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>

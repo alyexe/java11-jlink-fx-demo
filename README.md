@@ -10,3 +10,11 @@ It uses Java 11, jlink and Java FX 11. It shows three things
 ### Requirements
 Maven 3.5.x
 Java 11 JDK
+
+### Using the Moditect plugin
+
+In my first attempt, I used the exec plugin to run jlink and create a runtime image.
+In my second attempt, I replaced the exec plugin with the moditect plugin
+(see https://github.com/moditect/moditect). With this plugin it is possible to setup 
+the runtime image from within the maven pom file.
+

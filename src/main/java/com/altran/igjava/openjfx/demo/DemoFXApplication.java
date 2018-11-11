@@ -1,4 +1,4 @@
-package com.altran.igjava.demoserver;
+package com.altran.igjava.openjfx.demo;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
